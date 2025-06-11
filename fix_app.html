@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vocabulary Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 20px;
+    }
+    .hidden { display: none; }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .section { margin-top: 20px; }
+    input { padding: 5px; margin: 5px; }
+    ul { list-style-type: none; padding: 0; }
+    li { margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome Page -->
+  <div id="welcomePage">
+    <h1>👋 Selamat Datang di Vocabulary Builder!</h1>
+    <p>Belajar kosakata Inggris dengan mudah dan menyenangkan! 📚✨</p>
+    <button onclick="startApp()">🚀 Mulai</button>
+  </div>
+
+  <!-- Main App Page -->
+  <div id="mainPage" class="hidden">
+    <h2>📘 Vocabulary Builder</h2>
+
+    <button onclick="toggleSection('dictionarySection')">📂 Mini Dictionary</button>
+    <button onclick="toggleSection('randomSection')">🎲 Random Vocabulary</button>
+    <button onclick="toggleSection('addSection')">✍️ Tambah Kosakata</button>
+    <button onclick="toggleSection('reviewSection')">🔁 Review</button>
+
+    <!-- Mini Dictionary -->
+    <div id="dictionarySection" class="section hidden">
+      <h3>Mini Dictionary 📚</h3>
+      <p>Ketik kata bahasa Inggris untuk mencari artinya dalam Bahasa Indonesia. Jika belum ada, kamu bisa menambahkannya.</p>
+      <input type="text" id="searchInput" placeholder="Cari atau tambah kata Inggris...">
+      <button onclick="searchOrAddWord()">Cari / Tambah</button>
+      <p id="searchResult"></p>
+    </div>
+
+    <!-- Random Vocabulary -->
+    <div id="randomSection" class="section hidden">
+      <h3>Random Vocabulary 🎯</h3>
+      <p id="randomWord"></p>
+      <button onclick="showRandomWord()">🎲 Ambil Kata Acak</button>
+    </div>
+
+    <!-- Add Vocabulary -->
+    <div id="addSection" class="section hidden">
+      <h3>Tambah Kosakata Sendiri ✏️</h3>
+      <input type="text" id="newWord" placeholder="Kata dalam Bahasa Inggris">
+      <input type="text" id="newMeaning" placeholder="Terjemahan Bahasa Indonesia">
+      <button onclick="addWord()">➕ Tambah</button>
+    </div>
+
+    <!-- Review -->
+    <div id="reviewSection" class="section hidden">
+      <h3>Daftar Review Kosakata 📒</h3>
+      <ul id="reviewList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const words = [
+      { word: "apple", meaning: "apel" },
+      { word: "brave", meaning: "berani" },
+      { word: "run", meaning: "lari" },
+      { word: "school", meaning: "sekolah" },
+      { word: "friend", meaning: "teman" },
+      { word: "eat", meaning: "makan" }
+    ];
+
+    const reviewList = [];
+
+    function startApp() {
+      document.getElementById("welcomePage").classList.add("hidden");
+      document.getElementById("mainPage").classList.remove("hidden");
+    }
+
+    function toggleSection(id) {
+      const section = document.getElementById(id);
+      section.classList.toggle("hidden");
+    }
+
+    function showRandomWord() {
+      const random = words[Math.floor(Math.random() * words.length)];
+      document.getElementById("randomWord").textContent = `${random.word} = ${random.meaning}`;
+      reviewList.push(random);
+      updateReviewList();
+    }
+
+    function addWord() {
+      const word = document.getElementById("newWord").value.trim().toLowerCase();
+      const meaning = document.getElementById("newMeaning").value.trim().toLowerCase();
+      if (word && meaning) {
+        const entry = { word, meaning };
+        words.push(entry);
+        reviewList.push(entry);
+        updateReviewList();
+        document.getElementById("newWord").value = '';
+        document.getElementById("newMeaning").value = '';
+        alert("✅ Kosakata berhasil ditambahkan!");
+      }
+    }
+
+    function searchOrAddWord() {
+      const input = document.getElementById("searchInput").value.trim().toLowerCase();
+      if (!input) return;
+
+      const found = words.find(item => item.word.toLowerCase() === input);
+      const resultEl = document.getElementById("searchResult");
+
+      if (found) {
+        resultEl.textContent = `${found.word} = ${found.meaning}`;
+        reviewList.push(found);
+        updateReviewList();
+      } else {
+        const meaning = prompt(`Kata "${input}" belum ada. Masukkan terjemahan Bahasa Indonesianya:`);
+        if (meaning) {
+          const newEntry = { word: input, meaning: meaning.toLowerCase() };
+          words.push(newEntry);
+          reviewList.push(newEntry);
+          updateReviewList();
+          resultEl.textContent = `✅ Ditambahkan: ${input} = ${meaning}`;
+        } else {
+          resultEl.textContent = "❌ Tidak jadi ditambahkan.";
+        }
+      }
+
+      document.getElementById("searchInput").value = '';
+    }
+
+    function updateReviewList() {
+      const list = document.getElementById("reviewList");
+      list.innerHTML = '';
+      reviewList.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.word} = ${item.meaning}`;
+        list.appendChild(li);
+      });
+    }
+  </script>
+
+</body>
+</html>
